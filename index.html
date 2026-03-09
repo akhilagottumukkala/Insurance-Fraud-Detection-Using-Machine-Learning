@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Risk Engine | Fraud Detection</title>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg: #050505; --card: #111111; --accent: #00f2ff; --text: #e0e0e0; }
+        body { font-family: 'Rajdhani', sans-serif; background-color: var(--bg); color: var(--text); padding: 50px; }
+        .dashboard { max-width: 1000px; margin: auto; background: var(--card); padding: 40px; border-radius: 20px; border: 1px solid #222; box-shadow: 0 0 30px rgba(0,242,255,0.05); }
+        h1 { text-align: center; color: var(--accent); letter-spacing: 5px; margin-bottom: 40px; font-size: 2.5rem; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+        .input-box { margin-bottom: 20px; }
+        label { display: block; color: #888; margin-bottom: 8px; font-size: 14px; text-transform: uppercase; }
+        input, select { width: 100%; padding: 12px; background: #1a1a1a; border: 1px solid #333; color: white; border-radius: 8px; font-family: inherit; }
+        input:focus { border-color: var(--accent); outline: none; }
+        .scan-btn { width: 100%; padding: 18px; background: var(--accent); color: black; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 1.1rem; margin-top: 30px; transition: 0.3s; }
+        .scan-btn:hover { background: #00c2cc; transform: scale(1.01); }
+        
+        /* Result Section */
+        .result-container { margin-top: 40px; text-align: center; padding: 25px; border-radius: 15px; background: rgba(255,255,255,0.02); }
+        .risk-meter { width: 100%; height: 10px; background: #222; border-radius: 5px; margin: 20px 0; overflow: hidden; }
+        .risk-fill { height: 100%; transition: width 1s ease-in-out; }
+        .fraud-status { border-color: #ff3e3e; color: #ff3e3e; }
+        .safe-status { border-color: #00ff88; color: #00ff88; }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <h1>FRAUD_SCANNER</h1>
+        <form action="/predict" method="POST">
+            <div class="grid">
+                <div class="input-box">
+                    <label>Incident Severity (Top Factor)</label>
+                    <select name="incident_severity">
+                        <option value="Major Damage">Major Damage</option>
+                        <option value="Total Loss">Total Loss</option>
+                        <option value="Minor Damage">Minor Damage</option>
+                        <option value="Trivial Damage">Trivial Damage</option>
+                    </select>
+                </div>
+                <div class="input-box">
+                    <label>Total Claim Amount ($)</label>
+                    <input type="number" name="total_claim_amount" value="65000" required>
+                </div>
+                <div class="input-box">
+                    <label>Insured Hobbies</label>
+                    <select name="insured_hobbies">
+                        <option value="chess">Chess</option>
+                        <option value="cross-fit">Cross-fit</option>
+                        <option value="reading">Reading</option>
+                        <option value="paintball">Paintball</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="input-box">
+                    <label>Collision Type</label>
+                    <select name="collision_type">
+                        <option value="Rear Collision">Rear Collision</option>
+                        <option value="Front Collision">Front Collision</option>
+                        <option value="Side Collision">Side Collision</option>
+                    </select>
+                </div>
+                <div class="input-box">
+                    <label>Months as Customer</label>
+                    <input type="number" name="months_as_customer" value="120">
+                </div>
+                <div class="input-box">
+                    <label>Authorities Contacted</label>
+                    <select name="authorities_contacted">
+                        <option value="Police">Police</option>
+                        <option value="Fire">Fire</option>
+                        <option value="Ambulance">Ambulance</option>
+                        <option value="None">None</option>
+                    </select>
+                </div>
+            </div>
+            <button class="scan-btn">INITIALIZE FRAUD ANALYSIS</button>
+        </form>
+
+        {% if score %}
+        <div class="result-container {{ 'fraud-status' if score > 50 else 'safe-status' }}">
+            <h2 style="margin:0">{{ "HIGH RISK ALERT" if score > 50 else "LOW RISK CLEARANCE" }}</h2>
+            <div class="risk-meter">
+                <div class="risk-fill" style="width: {{ score }}%; background: {{ '#ff3e3e' if score > 50 else '#00ff88' }};"></div>
+            </div>
+            <p>Risk Probability Level: <strong>{{ score }}%</strong></p>
+            <p>{{ "The claim displays high-correlation patterns with fraudulent history." if score > 50 else "The claim matches patterns of standard legitimate incidents." }}</p>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>
